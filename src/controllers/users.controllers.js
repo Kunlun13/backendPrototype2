@@ -55,16 +55,16 @@ const signup = asyncHandler(async (req, res) => {
 const signin = asyncHandler(async (req, res) => {
     const {username, password} = req.body
     if(username=="" || password=="")
-    return send.status(402).json({message: "Username or Password not Found"})
+    return res.status(402).json({message: "Username or Password not Found"})
 
     const user = await User.findOne({username})
 
     if(!user)
     {
-        return send.status(403).json({message: "User Does not exist"})
+        return res.status(403).json({message: "User Does not exist"})
     }
     if(!(await user.verifyPassword(password)))
-    return send.status(403).json({message: "Password is wrong"})
+    return res.status(403).json({message: "Password is wrong"})
 try {
     
         const refreshToken = await generateRefreshToken(user._id)
@@ -74,8 +74,6 @@ try {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
         }
-    
-        console.log(accessToken, "\n", refreshToken)
     
         return res.status(200).cookie("accessToken", accessToken, options).cookie("refreshToken", refreshToken, options).json({message:"User Succesfully Logged In"})
 } catch (error) {
