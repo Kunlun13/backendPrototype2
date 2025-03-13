@@ -30,8 +30,12 @@ const groupSchema = new mongoose.Schema({
     parentGroup: {
         type: Schema.Types.ObjectId,
         ref: "Group",
-        required: true
-    }
+        required: false,
+    },
+    personal: {
+        type: Boolean,
+        required: true,
+    },
 
 }, {timestamps: true})
 

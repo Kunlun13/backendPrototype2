@@ -1,5 +1,8 @@
 import { User } from "../models/user.models.js";
+import { Group } from "../models/group.models.js";
+import { Task } from "../models/task.models.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import mongoose from "mongoose";
 
 const generateRefreshToken = async (userId)=> {
     
@@ -81,5 +84,104 @@ try {
 }
 })
 
+const addNewPersonalGroup = asyncHandler(async (req, res) => {
+    const {name, aboutGroup} = req.body;
+    if(!name)
+    {
+        return res.status(401).send("No name found")
+    }
+    try {
+        const newGroup = await Group.create({
+                name,
+                aboutGroup: aboutGroup?aboutGroup:"",
+                owner: req.user._id,
+                parentGroup: null,
+                personal: true,
+            })
+            return res.status(200).send("New group created!!!")
+        }
+    catch (error) {
+        return res.status(400).send("Something went wrong while creating new group")
+    }
+})
 
-export {signup, signin}
+const addNewTask = asyncHandler(async (req, res) => {
+    const {name, details, group} = req.body
+    if(!name || !group)
+    return res.status(410).send("name or group not present")
+
+try {
+
+    const newTask = Task.create({
+        name,
+        details: details?details:"",
+        group: group,
+    })
+
+    return res.status(200).send("New Task Created!!!")
+
+    
+} catch (error) {
+    return res.status(410).send("Something went wrong while creating new task")
+    }
+})
+
+const removeGroup = asyncHandler(async (req, res) => {
+    const {group} = req.body;
+
+    if(!group)
+    {
+        return res.status(401).send("No group found")
+    }
+    try {
+        const deletedGroup = await Group.findByIdAndDelete(group)
+
+        if(!deletedGroup)
+        return res.status(404).send("group not found")
+
+        return res.status(200).send("Group Deleted!!!")
+
+    }
+
+    catch (error) {
+        return res.status(401).send("Something went wrong while deleting group")
+    }
+})
+
+const updateTask = asyncHandler(async (req, res) => {
+    const {task, name, details, completed} = req.body
+
+    if(!name || !task)
+    {
+        return res.status(400).send("No Name or task found")
+    }
+    
+    try {
+        const updateTask = await Task.findByIdAndUpdate(task, {name, details, completed})
+        
+        return res.status(410).send("Task Updated")
+    } catch (error) {
+        return res.status(410).send("Something went wrong while updating Task")
+    }
+
+
+})
+
+const enlistTask = asyncHandler(async (req, res) => {
+    const {group} = req.body
+
+    try {
+        const tasks = await Task.find({
+            group,
+        }).select("-createdAt -updatedAt -__v")
+
+        
+        return res.status(200).json(tasks)
+    
+    } catch (error) {
+        return res.status(400).send("Something went wrong while finding tasks")
+    }
+
+})
+
+export {signup, signin, addNewPersonalGroup, addNewTask, removeGroup, updateTask, enlistTask}

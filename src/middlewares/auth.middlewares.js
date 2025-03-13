@@ -16,11 +16,11 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
         const user = await User.findById(decodedJSON?._id).select("-password -refreshToken")
     
         if(!user)
-        return res.status(500).send("User not found")
+        return res.status(401).send("Access Denied")
     
         req.user = user
         next()
     } catch (error) {
-        return res.status(500).send("Miscllenious Error")
+        return res.status(401).send("Miscllenious Auth Error")
     }
 })
