@@ -184,4 +184,18 @@ const enlistTask = asyncHandler(async (req, res) => {
 
 })
 
-export {signup, signin, addNewPersonalGroup, addNewTask, removeGroup, updateTask, enlistTask}
+const enlistGroup = asyncHandler(async (req, res) => {
+    const {_id} = req.user
+
+    try {
+        const groups = await Group.find({
+            owner: _id,
+        })
+
+        return res.status(200).json(groups)
+    } catch (error) {
+        return res.status(404).send("groups not found");
+    }
+})
+
+export {signup, signin, addNewPersonalGroup, addNewTask, removeGroup, updateTask, enlistTask, enlistGroup}

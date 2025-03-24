@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addNewPersonalGroup, addNewTask, enlistTask, removeGroup, signin, signup, updateTask } from "../controllers/users.controllers.js";
+import { addNewPersonalGroup, addNewTask, enlistGroup, enlistTask, removeGroup, signin, signup, updateTask } from "../controllers/users.controllers.js";
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
 
 const userRouter = Router()
@@ -13,5 +13,6 @@ userRouter.route("/removeGroup").post(verifyJWT, removeGroup)
 userRouter.route("/addNewTask").post(verifyJWT, addNewTask)
 userRouter.route("/updateTask").post(verifyJWT, updateTask)
 userRouter.route("/enlistTask").post(verifyJWT, enlistTask)
+userRouter.route("/enlistGroup").post(verifyJWT, enlistGroup)
 
 export default userRouter
