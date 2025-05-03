@@ -78,7 +78,8 @@ try {
             secure: process.env.NODE_ENV === "production",
         }
     
-        return res.status(200).cookie("accessToken", accessToken, options).cookie("refreshToken", refreshToken, options).json({message:"User Succesfully Logged In"})
+        return res.status(200).cookie("accessToken", accessToken, options).cookie("refreshToken", refreshToken, options).json({message:"User Succesfully Logged In"}).header(
+            "Access-Control-Allow-Credentials", 'true')
 } catch (error) {
     return res.status(400).json({"message": "Oops! Something went wrong"})
 }
@@ -147,6 +148,27 @@ const removeGroup = asyncHandler(async (req, res) => {
         return res.status(401).send("Something went wrong while deleting group")
     }
 })
+const removeTask = asyncHandler(async (req, res) => {
+    const {task} = req.body;
+
+    if(!task)
+    {
+        return res.status(401).send("No task found")
+    }
+    try {
+        const deletedTask = await Task.findByIdAndDelete(task)
+
+        if(!deletedTask)
+        return res.status(404).send("Task not found")
+
+        return res.status(200).send("Task Deleted!!!")
+
+    }
+
+    catch (error) {
+        return res.status(401).send("Something went wrong while deleting task")
+    }
+})
 
 const updateTask = asyncHandler(async (req, res) => {
     const {task, name, details, completed} = req.body
@@ -159,7 +181,7 @@ const updateTask = asyncHandler(async (req, res) => {
     try {
         const updateTask = await Task.findByIdAndUpdate(task, {name, details, completed})
         
-        return res.status(410).send("Task Updated")
+        return res.status(200).send("Task Updated")
     } catch (error) {
         return res.status(410).send("Something went wrong while updating Task")
     }
@@ -169,7 +191,6 @@ const updateTask = asyncHandler(async (req, res) => {
 
 const enlistTask = asyncHandler(async (req, res) => {
     const {group} = req.body
-
     try {
         const tasks = await Task.find({
             group,
@@ -198,4 +219,4 @@ const enlistGroup = asyncHandler(async (req, res) => {
     }
 })
 
-export {signup, signin, addNewPersonalGroup, addNewTask, removeGroup, updateTask, enlistTask, enlistGroup}
+export {signup, signin, addNewPersonalGroup, addNewTask, removeGroup, updateTask, enlistTask, enlistGroup, removeTask}
