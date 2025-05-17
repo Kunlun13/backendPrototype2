@@ -9,6 +9,10 @@ const members = new mongoose.Schema({
         type: String,
         required: true,
         enum: ["0", "1", "2"]
+
+        // 0 : See
+        // 1 : update
+        // 2 : Remove Members, add remove tasks
     }
 })
 

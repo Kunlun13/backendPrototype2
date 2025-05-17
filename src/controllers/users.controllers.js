@@ -211,6 +211,7 @@ const enlistGroup = asyncHandler(async (req, res) => {
     try {
         const groups = await Group.find({
             owner: _id,
+            personal: true,
         })
 
         return res.status(200).json(groups)
@@ -219,4 +220,26 @@ const enlistGroup = asyncHandler(async (req, res) => {
     }
 })
 
-export {signup, signin, addNewPersonalGroup, addNewTask, removeGroup, updateTask, enlistTask, enlistGroup, removeTask}
+const editGroup = asyncHandler(async (req, res) => {
+    const {group, name, aboutGroup} = req.body
+
+    if(!group)
+    {
+        return res.status(404).send("group not found");
+    }
+    
+    try {
+
+        const groupss = await Group.findByIdAndUpdate(group, {
+            name,
+            aboutGroup
+        })
+
+        return res.status(200).send("Group updated");
+        
+    } catch (error) {
+        return res.status(400).send("Something went wrong!!");
+    }
+})
+
+export {signup, signin, addNewPersonalGroup, addNewTask, removeGroup, updateTask, enlistTask, enlistGroup, removeTask, editGroup}
