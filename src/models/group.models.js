@@ -4,6 +4,7 @@ const members = new mongoose.Schema({
     user: {
         type: Schema.Types.ObjectId,
         required:true,
+        ref: 'User'
     },
     permission: {
         type: String,

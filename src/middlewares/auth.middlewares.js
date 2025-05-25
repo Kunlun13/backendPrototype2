@@ -7,7 +7,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
     const accessToken = req.cookies.accessToken
 
     if(!accessToken)
-    return res.status(500).send("Access not found")
+    return res.status(401).send("Access not found")
     // return next(Error)
 
     try {
