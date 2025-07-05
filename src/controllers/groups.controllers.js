@@ -153,6 +153,20 @@ const removeTask = asyncHandler(async (req, res) => {
     }
 })
 
+const removeGroup = asyncHandler(async (req, res) =>{
+    const {group} = req.body;
+    const foundGroup = await Group.findById(group);
+
+    if(foundGroup.owner.toString()!=req.user._id.toString())
+    {
+        return res.status(400).send("hshshsshshsh");
+    }
+    
+    await Group.findByIdAndDelete(group);
+    
+    return res.status(200).send("Group deleted");
+})
+
 const checkPermission = asyncHandler(async (req, res) => {
     const { group } = req.body
 
@@ -201,12 +215,25 @@ const checkPermission = asyncHandler(async (req, res) => {
         })
 })
 
+const checkOwner = asyncHandler(async (req, res) => {
+    const { group } = req.body
+
+    const foundGroup = await Group.findById(group);
+    if(!foundGroup)
+    return res.status(404).send("group not found")
+
+    const ans = (foundGroup.owner.toString()==req.user._id.toString())
+    return res.status(200).json({
+        isOwner: ans
+    })
+})
+
 const joinGroup = asyncHandler(async (req, res) => {
     const { group } = req.body;
 
     const foundGroup = await Group.findById(group);
 
-    if (!foundGroup) {
+    if (!foundGroup || foundGroup.personal != false) {
         return res.status(404).json({ message: "Group not found" });
     }
 
@@ -222,7 +249,7 @@ const joinGroup = asyncHandler(async (req, res) => {
     
     foundGroup.members.push({
         user: req.user._id,
-        permission: "0"
+        permission: "1"
     });
 
     await foundGroup.save();
@@ -362,4 +389,4 @@ const updateTask = asyncHandler(async (req, res) => {
 
 
 
-export { addNewGroup, enlistGroup, enlistTask, addNewTask, removeTask, checkPermission, joinGroup, viewMembers, updateMemberPermission, removeMember, updateTask }
+export { addNewGroup, enlistGroup, enlistTask, addNewTask, removeTask, checkPermission, joinGroup, viewMembers, updateMemberPermission, removeMember, updateTask, checkOwner, removeGroup }

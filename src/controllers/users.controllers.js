@@ -242,4 +242,47 @@ const editGroup = asyncHandler(async (req, res) => {
     }
 })
 
-export {signup, signin, addNewPersonalGroup, addNewTask, removeGroup, updateTask, enlistTask, enlistGroup, removeTask, editGroup}
+const changePassword = asyncHandler(async (req, res) => {
+    const {oldP, newP} = req.body
+    if(newP=="")
+    return res.status(400).send("empty password")
+
+    const user = await User.findById(req.user._id)
+
+    if(oldP != user.password)
+    {
+        return res.status(401).send("not allowed");
+    }
+
+
+    user.password = newP
+
+    await user.save()
+})
+
+const profile = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id)
+
+    return res.status(200).json({
+        name: user.name,
+        email: user.email
+    })
+})
+
+const logout = asyncHandler (async (req, res) => {
+    const user = await User.findById(req.user._id)
+
+    user.refreshToken = "";
+    user.accessToken = "";
+
+    await user.save({validateBeforeSave:false})
+
+    const options = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+    }
+
+    return res.status(200).cookie("accessToken", "", options).cookie("refreshToken", "", options).send("User Succesfully Logged In")
+})
+
+export {signup, signin, addNewPersonalGroup, addNewTask, removeGroup, updateTask, enlistTask, enlistGroup, removeTask, editGroup, changePassword, profile, logout}
