@@ -3,6 +3,7 @@ import { Group } from "../models/group.models.js";
 import { Task } from "../models/task.models.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import mongoose from "mongoose";
+import { compare } from "bcrypt";
 
 const generateRefreshToken = async (userId)=> {
     
@@ -248,8 +249,8 @@ const changePassword = asyncHandler(async (req, res) => {
     return res.status(400).send("empty password")
 
     const user = await User.findById(req.user._id)
-
-    if(oldP != user.password)
+    console.log(user.password)
+    if(!(await user.verifyPassword(oldP)))
     {
         return res.status(401).send("not allowed");
     }
@@ -258,6 +259,8 @@ const changePassword = asyncHandler(async (req, res) => {
     user.password = newP
 
     await user.save()
+
+    return res.status(200).send("Password changed")
 })
 
 const profile = asyncHandler(async (req, res) => {

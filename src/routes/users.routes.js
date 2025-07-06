@@ -17,7 +17,7 @@ userRouter.route("/enlistGroup").post(verifyJWT, enlistGroup)
 userRouter.route("/removeTask").post(verifyJWT, removeTask)
 userRouter.route("/editGroup").put(verifyJWT, editGroup)
 userRouter.route("/profile").post(verifyJWT, profile)
-userRouter.route("/changePassword").put(verifyJWT, changePassword)
+userRouter.route("/changePassword").post(verifyJWT, changePassword)
 userRouter.route("/logout").get(verifyJWT, logout)
 
 export default userRouter
